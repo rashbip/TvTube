@@ -27,7 +27,7 @@ public final class ProgressBarManager {
     
     ViewGroup rootView;
     View mProgressBarView;
-    boolean mEnableProgressBar = true;
+    boolean mEnableProgressBar = false;
     boolean mUserProvidedProgressBar;
     boolean mIsShowing;
     private int mPosition = Gravity.CENTER;

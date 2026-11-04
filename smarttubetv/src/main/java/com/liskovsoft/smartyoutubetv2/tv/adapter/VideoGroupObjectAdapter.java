@@ -42,11 +42,35 @@ public class VideoGroupObjectAdapter extends ObjectAdapter {
         this(null, presenter);
     }
 
+    private boolean mHasPlaceholders = false;
+
     private void initData(VideoGroup videoGroup) {
         sAdapterRegistry.add(this);
 
         if (videoGroup != null) {
             add(videoGroup);
+        } else {
+            showPlaceholders();
+        }
+    }
+
+    public void showPlaceholders() {
+        if (!mVideoItems.isEmpty()) return;
+        mHasPlaceholders = true;
+        for (int i = 0; i < 4; i++) {
+            Video dummy = new Video();
+            dummy.id = -100 - i;
+            mVideoItems.add(dummy);
+        }
+        notifyItemRangeInserted(0, 4);
+    }
+
+    public void clearPlaceholders() {
+        if (mHasPlaceholders) {
+            int count = mVideoItems.size();
+            mVideoItems.clear();
+            mHasPlaceholders = false;
+            notifyItemRangeRemoved(0, count);
         }
     }
 
@@ -76,6 +100,8 @@ public class VideoGroupObjectAdapter extends ObjectAdapter {
         if (group == null || group.getVideos() == null) {
             return;
         }
+
+        clearPlaceholders();
 
         if (group.getAction() == VideoGroup.ACTION_PREPEND) {
             prepend(group); // add at the begin of the existing group
