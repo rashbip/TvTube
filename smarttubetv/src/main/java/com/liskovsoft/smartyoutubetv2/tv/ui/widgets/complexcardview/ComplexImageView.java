@@ -59,6 +59,17 @@ public class ComplexImageView extends RelativeLayout {
         mProgressBar = findViewById(R.id.clip_progress);
         mProgressContainer = findViewById(R.id.clip_info);
         mPreviewContainer = findViewById(R.id.preview_container);
+
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            setClipToOutline(true);
+            setOutlineProvider(new android.view.ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, android.graphics.Outline outline) {
+                    float radius = getResources().getDimension(R.dimen.lb_rounded_rect_corner_radius);
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+                }
+            });
+        }
     }
 
     /**

@@ -84,7 +84,7 @@ public class VideoCardPresenter extends LongClickPresenter {
         cardView.enableBadge(isBadgeEnabled());
         cardView.enableTitle(isTitleEnabled());
         cardView.enableContent(isContentEnabled());
-        cardView.setBackgroundColor(mDefaultBackgroundColor); // background is temporarily visible during animations
+        cardView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
         //if (VERSION.SDK_INT >= 23 && MainUIData.instance(context).isUiTweakEnabled(MainUIData.UI_TWEAK_ROUNDED_CORNERS)) {
         //    cardView.setForeground(ContextCompat.getDrawable(context, R.drawable.lb_card_outline));
         //}
@@ -93,26 +93,26 @@ public class VideoCardPresenter extends LongClickPresenter {
     }
 
     private void updateCardBackgroundColor(ComplexImageCardView view, boolean selected) {
-        int backgroundColor = selected ? mSelectedBackgroundColor : mDefaultBackgroundColor;
-        int textColor = selected ? mSelectedTextColor : mDefaultTextColor;
-
-        // Both background colors should be set because the view's
-        // background is temporarily visible during animations.
-        // NOTE: has visual bug with rounded corners
-        //view.setBackgroundColor(backgroundColor);
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+            view.setForeground(null);
+            View imgWrapper = view.getComplexImageView() != null ? view.getComplexImageView() : view.findViewById(R.id.main_image_wrapper);
+            if (imgWrapper != null) {
+                imgWrapper.setForeground(selected ? ContextCompat.getDrawable(view.getContext(), R.drawable.lb_card_outline) : null);
+            }
+        }
 
         View infoField = view.findViewById(R.id.info_field);
         if (infoField != null) {
-            infoField.setBackgroundColor(backgroundColor);
+            infoField.setBackgroundColor(android.graphics.Color.TRANSPARENT);
         }
 
         TextView titleText = view.findViewById(R.id.title_text);
         if (titleText != null) {
-            titleText.setTextColor(textColor);
+            titleText.setTextColor(android.graphics.Color.WHITE);
         }
         TextView contentText = view.findViewById(R.id.content_text);
         if (contentText != null) {
-            contentText.setTextColor(textColor);
+            contentText.setTextColor(0xFFAAAAAA);
         }
     }
 

@@ -13,6 +13,9 @@ import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.util.ViewUtil;
 
 public class ComplexImageCardView extends ImageCardView {
+    public ComplexImageView getComplexImageView() {
+        return mComplexImageView;
+    }
     private ComplexImageView mComplexImageView;
     private Handler mHandler;
     private boolean mIsCardTextAutoScrollEnabled;
