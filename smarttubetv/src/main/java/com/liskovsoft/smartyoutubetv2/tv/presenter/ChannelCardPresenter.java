@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -49,8 +48,7 @@ public class ChannelCardPresenter extends LongClickPresenter {
         }
 
         container.setOnFocusChangeListener((v, hasFocus) -> {
-            textView.setSelected(hasFocus);
-            textView.setTextColor(hasFocus ? Color.parseColor("#0F0F0F") : Color.WHITE);
+            applyState(container, textView, hasFocus);
 
             if (!autoScrollEnabled) {
                 return;
@@ -66,6 +64,13 @@ public class ChannelCardPresenter extends LongClickPresenter {
         return new ViewHolder(container);
     }
 
+    private void applyState(View container, TextView textView, boolean focusedOrSelected) {
+        boolean active = focusedOrSelected || container.isSelected() || container.hasFocus();
+        textView.setSelected(active);
+        textView.setTextColor(active ? Color.parseColor("#0F0F0F") : Color.WHITE);
+        textView.setBackgroundResource(active ? R.drawable.channel_card_pill_bg : 0);
+    }
+
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
         super.onBindViewHolder(viewHolder, item);
@@ -77,8 +82,7 @@ public class ChannelCardPresenter extends LongClickPresenter {
 
         TextView textView = viewHolder.view.findViewById(R.id.channel_title);
         textView.setText(video.getTitle());
-        textView.setSelected(viewHolder.view.hasFocus());
-        textView.setTextColor(viewHolder.view.hasFocus() ? Color.parseColor("#0F0F0F") : Color.WHITE);
+        applyState(viewHolder.view, textView, viewHolder.view.hasFocus());
 
         ImageView imageView = viewHolder.view.findViewById(R.id.channel_image);
         imageView.setVisibility(View.VISIBLE);
