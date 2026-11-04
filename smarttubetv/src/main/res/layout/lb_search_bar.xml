@@ -33,11 +33,13 @@
     <!-- MOD: rounded search bg (old value: lb_in_app_search_bg) -->
     <RelativeLayout
             android:id="@+id/lb_search_bar_items"
-            android:layout_width="@dimen/lb_search_bar_items_width"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/lb_search_bar_items_height"
             android:layout_toEndOf="@+id/lb_search_bar_speech_orb"
+            android:layout_toStartOf="@+id/search_settings_orb"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/lb_search_bar_items_margin_start"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="@dimen/lb_search_bar_inner_margin_top"
             android:layout_marginBottom="@dimen/lb_search_bar_inner_margin_bottom"
             android:background="@drawable/rounded_search_bg"
@@ -60,6 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|start"
                     android:layout_marginStart="@dimen/lb_search_bar_edit_text_margin_start"
+                    android:layout_marginEnd="14dp"
                     android:layout_centerVertical="true"
                     android:cursorVisible="true"
                     android:layout_toEndOf="@+id/lb_search_bar_badge"
