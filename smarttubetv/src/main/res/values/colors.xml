@@ -68,4 +68,7 @@
     <color name="lb_speech_orb_not_recording">@color/orb_color</color>
     <color name="lb_speech_orb_not_recording_pulsed">@color/orb_bright_color</color>
     <color name="lb_speech_orb_not_recording_icon">@color/orb_icon_color</color>
+
+    <!-- Leanback side dialog / description background -->
+    <color name="lb_preference_decor_list_background">#F20F0F0F</color>
 </resources>

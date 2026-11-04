@@ -38,6 +38,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.ui.mod.clickable.LinkifyCompat;
 import com.liskovsoft.smartyoutubetv2.tv.ui.mod.clickable.LinkifyCompat.LinkifyClickHandler;
+import com.liskovsoft.smartyoutubetv2.tv.R;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -171,6 +172,10 @@ public class LeanbackListPreferenceDialogFragment extends LeanbackPreferenceDial
         final CharSequence message = mDialogMessage;
         if (!TextUtils.isEmpty(message)) {
             final TextView messageView = (TextView) view.findViewById(android.R.id.message);
+            final View messageScroll = view.findViewById(R.id.message_scroll);
+            if (messageScroll != null) {
+                messageScroll.setVisibility(View.VISIBLE);
+            }
 
             // Modified. Make textView focusable and clickable.
             //messageView.setAutoLinkMask(Linkify.WEB_URLS);
@@ -180,6 +185,7 @@ public class LeanbackListPreferenceDialogFragment extends LeanbackPreferenceDial
             messageView.setFocusable(true);
             messageView.setVisibility(View.VISIBLE);
             messageView.setText(message);
+            messageView.requestFocus();
 
             LinkifyCompat.addLinks(messageView, LinkifyCompat.WEB_URLS | LinkifyCompat.TIME_CODES, new LinkifyClickHandler() {
                 private final Context context = messageView.getContext();
