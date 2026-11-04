@@ -138,4 +138,7 @@
     <dimen name="lb_search_orb_size">42dp</dimen>
     <dimen name="lb_browse_padding_start">18dp</dimen>
     <dimen name="lb_browse_padding_top">12dp</dimen>
+    <dimen name="lb_playback_transport_progressbar_bar_height">6dp</dimen>
+    <dimen name="lb_playback_transport_progressbar_active_bar_height">8dp</dimen>
+    <dimen name="lb_playback_transport_progressbar_active_radius">7dp</dimen>
 </resources>

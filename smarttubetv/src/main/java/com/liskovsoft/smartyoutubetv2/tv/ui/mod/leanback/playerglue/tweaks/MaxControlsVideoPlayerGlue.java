@@ -25,6 +25,7 @@ import java.util.List;
 public abstract class MaxControlsVideoPlayerGlue<T extends PlayerAdapter>
         extends PlaybackTransportControlGlue<T> implements TopEdgeFocusListener, PlayerView {
     private String mQualityInfo;
+    private String mSeekPreviewTitle;
     private Video mVideo;
     private LiveStateProvider mLiveStateProvider;
     private WeakReference<PlaybackTransportRowPresenter.ViewHolder> mTransportViewHolder;
@@ -97,6 +98,7 @@ public abstract class MaxControlsVideoPlayerGlue<T extends PlayerAdapter>
                 viewHolder.setTopEdgeFocusListener(MaxControlsVideoPlayerGlue.this);
                 viewHolder.setQualityInfo(mQualityInfo);
                 viewHolder.setDateVisibility(isControlsVisible());
+                viewHolder.setSeekPreviewTitle(mSeekPreviewTitle);
                 // Don't uncomment
                 // Reset to defaults
                 //viewHolder.setSeekPreviewTitle(null);
@@ -173,6 +175,7 @@ public abstract class MaxControlsVideoPlayerGlue<T extends PlayerAdapter>
     }
 
     public void setSeekPreviewTitle(String title) {
+        mSeekPreviewTitle = title;
         if (getTransportViewHolder() != null) { // the chapter title when show seeking ui
             getTransportViewHolder().setSeekPreviewTitle(title);
         }

@@ -71,6 +71,10 @@ public class SuggestionsController extends BasePlayerController {
         // Remote control fix. Slow network fix. Suggestions may still be loading.
         // This could lead to changing current video info (title, id etc) to wrong one.
         disposeActions();
+        mChapters = null;
+        if (getPlayer() != null) {
+            getPlayer().setSeekPreviewTitle(null);
+        }
         //mCurrentGroup = video.getGroup(); // disable garbage collected
         //appendNextSectionVideoIfNeeded(video); // ConcurrentModificationException error
     }
@@ -148,6 +152,9 @@ public class SuggestionsController extends BasePlayerController {
     @Override
     public void onTickle() {
         updateLiveDescription();
+        if (getPlayer() != null && getPlayer().isControlsShown()) {
+            updateSeekPreviewTitle(getPlayer().getPositionMs());
+        }
     }
 
     private void updateLiveDescription() {
@@ -589,26 +596,37 @@ public class SuggestionsController extends BasePlayerController {
     }
 
     private void focusCurrentChapter() {
-        if (getPlayer() == null || !getPlayer().isControlsShown()) {
+        if (getPlayer() == null) {
             return;
         }
 
-        VideoGroup group = getPlayer().getSuggestionsByIndex(0);
-
-        if (group == null || group.isEmpty() || !group.getVideos().get(0).isChapter) {
+        if (mChapters == null || mChapters.isEmpty()) {
+            getPlayer().setSeekPreviewTitle(null);
             return;
         }
 
         Pair<ChapterItem, Integer> currentChapter = getCurrentChapter();
 
         if (currentChapter != null) {
-            getPlayer().focusSuggestedItem(currentChapter.second);
             getPlayer().setSeekPreviewTitle(currentChapter.first.getTitle());
+            if (getPlayer().isControlsShown()) {
+                VideoGroup group = getPlayer().getSuggestionsByIndex(0);
+                if (group != null && !group.isEmpty() && group.getVideos().get(0).isChapter) {
+                    getPlayer().focusSuggestedItem(currentChapter.second);
+                }
+            }
+        } else {
+            getPlayer().setSeekPreviewTitle(null);
         }
     }
 
     private void updateSeekPreviewTitle(long positionMs) {
-        if (getPlayer() == null || !getPlayer().isControlsShown()) {
+        if (getPlayer() == null) {
+            return;
+        }
+
+        if (mChapters == null || mChapters.isEmpty()) {
+            getPlayer().setSeekPreviewTitle(null);
             return;
         }
 
@@ -616,6 +634,8 @@ public class SuggestionsController extends BasePlayerController {
 
         if (currentChapter != null) {
             getPlayer().setSeekPreviewTitle(currentChapter.first.getTitle());
+        } else {
+            getPlayer().setSeekPreviewTitle(null);
         }
     }
 

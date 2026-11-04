@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- MOD: intention to replace class name with custom one -->
 
-<!-- Note: clipChildren/clipToPadding false are needed to apply shadows to child
-     views with no padding of their own. Also to allow for negative margin on description. -->
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:clipChildren="false"
@@ -74,8 +72,8 @@
         android:layout_height="match_parent"
         android:id="@+id/transport_row"
         android:orientation="vertical"
-        android:paddingStart="?attr/browsePaddingStart"
-        android:paddingEnd="?attr/browsePaddingEnd"
+        android:paddingStart="37dp"
+        android:paddingEnd="37dp"
         android:clipChildren="false"
         android:clipToPadding="false" >
 
@@ -86,33 +84,80 @@
                       android:focusable="true"
                       android:layout_height="1dp"/>
 
-        <!-- Original top player row -->
-        <!--
-        <FrameLayout
-            android:id="@+id/controls_dock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layoutDirection="ltr"
-            android:layout_marginLeft="@dimen/lb_playback_transport_controlbar_margin_start"
-        />
-        -->
-
         <RelativeLayout android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layoutDirection="ltr"
-                        android:layout_marginLeft="@dimen/lb_playback_transport_controlbar_margin_start"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_marginBottom="2dp"
+                        android:focusable="false"
                         tools:ignore="RtlHardcoded" >
 
-            <FrameLayout
-                android:id="@+id/controls_dock"
+            <RelativeLayout android:id="@+id/time_info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layoutDirection="ltr"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false" >
+                <TextView
+                    android:id="@+id/ending_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    style="?attr/playbackControlsTimeStyle" />
+
+                <LinearLayout android:id="@+id/current_time_wrapper"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:orientation="horizontal"
+                              android:gravity="center_vertical"
+                              android:layoutDirection="ltr"
+                              android:focusable="false" >
+                    <TextView
+                        android:id="@+id/current_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#E6FFFFFF"
+                        android:textSize="13sp"
+                        style="?attr/playbackControlsTimeStyle" />
+
+                    <TextView
+                        android:id="@+id/seek_chapter_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="520dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:visibility="gone"
+                        android:textColor="#E6FFFFFF"
+                        android:textSize="13sp"
+                        style="?attr/playbackControlsTimeStyle" />
+
+                    <TextView
+                        android:id="@+id/separate_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="@string/lb_playback_time_separator"
+                        style="?attr/playbackControlsTimeStyle" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/total_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-            />
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:textColor="#E6FFFFFF"
+                android:textSize="13sp"
+                style="?attr/playbackControlsTimeStyle" />
 
             <RelativeLayout android:id="@+id/additional_info"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:visibility="gone"
                             android:layoutDirection="ltr"
                             android:layout_gravity="bottom"
                             android:layout_alignParentEnd="true"
@@ -122,12 +167,14 @@
                     android:id="@+id/quality_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_alignParentEnd="true"
                     style="?attr/playbackControlsTimeStyle" />
                 <com.liskovsoft.smartyoutubetv2.tv.ui.widgets.time.DateTimeView
                     android:id="@+id/date_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_alignParentEnd="true"
                     android:layout_below="@+id/quality_info"
                     style="?attr/playbackControlsTimeStyle" />
@@ -144,65 +191,32 @@
         <RelativeLayout android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layoutDirection="ltr"
-                        android:layout_marginLeft="@dimen/lb_playback_transport_controlbar_margin_start"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="6dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         tools:ignore="RtlHardcoded" >
+
+            <FrameLayout
+                android:id="@+id/controls_dock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:clipChildren="false"
+                android:clipToPadding="false" />
+
             <FrameLayout
                 android:id="@+id/secondary_controls_dock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true" >
-            </FrameLayout>
-
-            <RelativeLayout android:id="@+id/time_info"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layoutDirection="ltr"
-                            android:layout_gravity="bottom"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:focusable="false" >
-                <TextView
-                    android:id="@+id/ending_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    style="?attr/playbackControlsTimeStyle" />
-
-                <RelativeLayout android:id="@+id/current_time_wrapper"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layoutDirection="ltr"
-                                android:layout_alignParentEnd="true"
-                                android:layout_below="@+id/ending_time"
-                                android:focusable="false" >
-                    <TextView
-                        android:id="@+id/current_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toStartOf="@+id/separate_time"
-                        android:layout_marginStart="@dimen/lb_playback_transport_time_margin"
-                        style="?attr/playbackControlsTimeStyle" />
-
-                    <TextView
-                        android:id="@+id/separate_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/lb_playback_time_separator"
-                        android:layout_toStartOf="@+id/total_time"
-                        android:layout_marginStart="@dimen/lb_playback_transport_time_margin"
-                        style="?attr/playbackControlsTimeStyle" />
-
-                    <TextView
-                        android:id="@+id/total_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginStart="@dimen/lb_playback_transport_time_margin"
-                        style="?attr/playbackControlsTimeStyle" />
-                </RelativeLayout>
-            </RelativeLayout>
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:clipChildren="false"
+                android:clipToPadding="false" />
         </RelativeLayout>
-
 
     </com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.playerglue.tweaks.PlaybackTransportRowView>
 </LinearLayout>

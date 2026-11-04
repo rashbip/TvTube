@@ -8,7 +8,7 @@ import com.liskovsoft.smartyoutubetv2.tv.R;
  */
 public class ChatAction extends TwoStateAction {
     public ChatAction(Context context) {
-        super(context, R.id.action_chat, R.drawable.action_chat);
+        super(context, R.id.action_chat, R.drawable.yt_ic_player_comment, R.drawable.yt_ic_player_comment_filled, true, true);
 
         String[] labels = new String[2];
         // Note, labels denote the action taken when clicked

@@ -45,7 +45,7 @@ public class TwoStateAction extends MultiAction {
 
         mContext = context;
         Drawable[] drawables = new Drawable[2];
-        BitmapDrawable offDrawable = (BitmapDrawable) ContextCompat.getDrawable(context, offIconResId);
+        BitmapDrawable offDrawable = ActionHelpers.toBitmapDrawable(context, ContextCompat.getDrawable(context, offIconResId));
         drawables[INDEX_OFF] = offDrawable;
         drawables[INDEX_ON] = offDrawable == null ? null
                 : new BitmapDrawable(context.getResources(),
@@ -60,6 +60,28 @@ public class TwoStateAction extends MultiAction {
         setLabels(labels);
 
         setIndex(INDEX_OFF); // default state
+
+        mEnableLongPressMsg = enableLongPressMsg;
+    }
+
+    public TwoStateAction(Context context, int actionId, int offIconResId, int onIconResId, boolean enableLongPressMsg, boolean useFilledIcon) {
+        super(actionId);
+
+        mContext = context;
+        Drawable[] drawables = new Drawable[2];
+        BitmapDrawable offDrawable = ActionHelpers.toBitmapDrawable(context, ContextCompat.getDrawable(context, offIconResId));
+        BitmapDrawable onDrawable = ActionHelpers.toBitmapDrawable(context, ContextCompat.getDrawable(context, onIconResId));
+        drawables[INDEX_OFF] = offDrawable;
+        drawables[INDEX_ON] = onDrawable != null ? onDrawable : offDrawable;
+        setDrawables(drawables);
+
+        String[] labels = new String[drawables.length];
+        String simpleName = Helpers.getSimpleClassName(getClass().getSimpleName());
+        labels[INDEX_OFF] = simpleName + " Off";
+        labels[INDEX_ON] = simpleName + " On";
+        setLabels(labels);
+
+        setIndex(INDEX_OFF);
 
         mEnableLongPressMsg = enableLongPressMsg;
     }
@@ -80,17 +102,4 @@ public class TwoStateAction extends MultiAction {
     public void setBoundAction(TwoStateAction boundAction) {
         mBoundAction = boundAction;
     }
-
-    //@Override
-    //public void setLabels(String[] labels) {
-    //    if (mEnableLongPressMsg) {
-    //        for (int i = 0; i < labels.length; i++) {
-    //            if (labels[i] != null) {
-    //                labels[i] = Utils.updateTooltip(mContext, labels[i]);
-    //            }
-    //        }
-    //    }
-    //
-    //    super.setLabels(labels);
-    //}
 }

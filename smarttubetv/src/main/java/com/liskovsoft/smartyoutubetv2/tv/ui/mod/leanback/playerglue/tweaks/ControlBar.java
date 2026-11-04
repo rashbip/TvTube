@@ -16,9 +16,12 @@ package com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.playerglue.tweaks;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import androidx.leanback.R;
 
 import java.util.ArrayList;
 
@@ -41,11 +44,13 @@ class ControlBar extends LinearLayout {
 
     public ControlBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setGravity(Gravity.CENTER_VERTICAL);
         resetFocus(); // MOD: reset global focus index
     }
 
     public ControlBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setGravity(Gravity.CENTER_VERTICAL);
         resetFocus(); // MOD: reset global focus index
     }
 
@@ -71,7 +76,17 @@ class ControlBar extends LinearLayout {
         setFocusIndex(-1);
     }
 
+    private boolean isPrimaryControlsBar() {
+        View p = (View) getParent();
+        return p != null && p.getId() == R.id.controls_dock;
+    }
+
     int getDefaultFocusIndex() {
+        // When primary bar has 7 children (Channel, Description, Bell, Speed, Prev, Play/Pause, Next),
+        // default focus to Play/Pause at index 5.
+        if (isPrimaryControlsBar() && getChildCount() == 7) {
+            return 5;
+        }
         return mDefaultFocusToMiddle ? getChildCount() / 2 : 0;
     }
 
@@ -125,9 +140,52 @@ class ControlBar extends LinearLayout {
         }
     }
 
+    private int dp(float value) {
+        return Math.round(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics()));
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        // Center Play/Pause (index 5) ONLY in the primary control bar (controls_dock):
+        // [0:Channel, 1:Description, 2:Bell, 3:Speed]  ...  [4:Prev, 5:Play/Pause, 6:Next]
+        if (isPrimaryControlsBar() && getChildCount() == 7) {
+            int rowWidth = 0;
+            View p = (View) getParent();
+            if (p != null && p.getParent() instanceof View) {
+                View rowParent = (View) p.getParent();
+                rowWidth = rowParent.getMeasuredWidth();
+            }
+            if (rowWidth <= 0) {
+                rowWidth = getResources().getDisplayMetrics().widthPixels - dp(80);
+            }
+
+            int leftGroupWidth = 0;
+            for (int i = 0; i < 4; i++) {
+                View c = getChildAt(i);
+                LayoutParams clp = (LayoutParams) c.getLayoutParams();
+                leftGroupWidth += c.getMeasuredWidth() + clp.leftMargin + clp.rightMargin;
+            }
+
+            View prevView = getChildAt(4);
+            LayoutParams prevLp = (LayoutParams) prevView.getLayoutParams();
+            int prevSpan = prevView.getMeasuredWidth() + prevLp.rightMargin;
+
+            View playView = getChildAt(5);
+            int playWidth = playView.getMeasuredWidth();
+
+            int desiredMarginStart = Math.max(dp(12), (rowWidth / 2) - (playWidth / 2) - prevSpan - leftGroupWidth);
+            if (prevLp.leftMargin != desiredMarginStart) {
+                prevLp.setMarginStart(desiredMarginStart);
+                prevLp.leftMargin = desiredMarginStart;
+                prevView.setLayoutParams(prevLp);
+                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            }
+            return;
+        }
+
         if (mChildMarginFromCenter <= 0) {
             return;
         }

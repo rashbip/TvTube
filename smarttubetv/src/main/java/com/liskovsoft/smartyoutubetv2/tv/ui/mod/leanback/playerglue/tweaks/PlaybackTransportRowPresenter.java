@@ -99,6 +99,7 @@ public class PlaybackTransportRowPresenter extends PlaybackRowPresenter {
         final SeekBar mProgressBar;
         final ThumbsBar mThumbsBar;
         final TextView mThumbsBarTitle;
+        final TextView mSeekChapterTitle;
         final ViewGroup mThumbsBarWrapper;
         final String mRemainingTimeFormat;
         final String mEndingTimeFormat;
@@ -429,8 +430,8 @@ public class PlaybackTransportRowPresenter extends PlaybackRowPresenter {
             mPlayerData = PlayerData.instance(rootView.getContext());
             // MOD: switch between navigation modes
             PlayerTweaksData tweaksData = PlayerTweaksData.instance(rootView.getContext());
-            PlaybackTransportRowPresenter.this.mPlaybackControlsPresenter.setSharedFocusEnabled(tweaksData.isSyncRowButtonIndexEnabled());
-            PlaybackTransportRowPresenter.this.mSecondaryControlsPresenter.setSharedFocusEnabled(tweaksData.isSyncRowButtonIndexEnabled());
+            PlaybackTransportRowPresenter.this.mPlaybackControlsPresenter.setSharedFocusEnabled(false);
+            PlaybackTransportRowPresenter.this.mSecondaryControlsPresenter.setSharedFocusEnabled(false);
             mImageView = (ImageView) rootView.findViewById(R.id.image);
             mDescriptionDock = (ViewGroup) rootView.findViewById(R.id.description_dock);
             mCurrentTime = (TextView) rootView.findViewById(R.id.current_time);
@@ -561,6 +562,7 @@ public class PlaybackTransportRowPresenter extends PlaybackRowPresenter {
             }
             mThumbsBar = (ThumbsBar) rootView.findViewById(R.id.thumbs_row);
             mThumbsBarTitle = (TextView) rootView.findViewById(com.liskovsoft.smartyoutubetv2.tv.R.id.thumbs_row_title);
+            mSeekChapterTitle = (TextView) rootView.findViewById(com.liskovsoft.smartyoutubetv2.tv.R.id.seek_chapter_title);
             mThumbsBarWrapper = (ViewGroup) rootView.findViewById(com.liskovsoft.smartyoutubetv2.tv.R.id.thumbs_row_wrapper);
         }
 
@@ -764,47 +766,34 @@ public class PlaybackTransportRowPresenter extends PlaybackRowPresenter {
         }
 
         protected void onSetEndingTimeLabel(long remainingTimeMs) {
-            remainingTimeMs = applySpeedCorrection(remainingTimeMs);
-
             if (mEndingTime != null) {
-                if (mPlayerData.isRemainingTimeEnabled()) {
-                    formatTime(remainingTimeMs, mTempBuilder);
-                    mEndingTime.setText(String.format(mRemainingTimeFormat, mTempBuilder.toString()));
-                    mEndingTime.setVisibility(View.VISIBLE);
-                } else if (mPlayerData.isEndingTimeEnabled()) {
-                    mEndingTime.setText(String.format(mEndingTimeFormat,
-                            DateHelper.toShortTime(System.currentTimeMillis() + remainingTimeMs)));
-                    mEndingTime.setVisibility(View.VISIBLE);
-                } else {
-                    mEndingTime.setVisibility(View.GONE);
-                }
+                mEndingTime.setVisibility(View.GONE);
             }
         }
 
         void setQualityInfo(String content) {
-            if (content != null) {
-                if (mPlayerData.isQualityInfoEnabled()) {
-                    mQualityInfo.setText(content);
-                    mQualityInfo.setVisibility(View.VISIBLE);
-                } else {
-                    mQualityInfo.setVisibility(View.GONE);
-                }
+            if (mQualityInfo != null) {
+                mQualityInfo.setVisibility(View.GONE);
             }
         }
 
         void setDateVisibility(boolean isVisible) {
-            if (mPlayerData.isClockEnabled()) {
-                mDateTime.setVisibility(View.VISIBLE);
-            } else {
+            if (mDateTime != null) {
                 mDateTime.setVisibility(View.GONE);
             }
         }
 
         void setSeekPreviewTitle(String title) {
-            if (title != null) {
-                mThumbsBarTitle.setText(title);
-                mThumbsBarTitle.setVisibility(View.VISIBLE);
-            } else {
+            if (mSeekChapterTitle != null) {
+                if (title != null && !title.trim().isEmpty()) {
+                    mSeekChapterTitle.setText(" • " + title.trim());
+                    mSeekChapterTitle.setVisibility(View.VISIBLE);
+                } else {
+                    mSeekChapterTitle.setText(null);
+                    mSeekChapterTitle.setVisibility(View.GONE);
+                }
+            }
+            if (mThumbsBarTitle != null) {
                 mThumbsBarTitle.setVisibility(View.GONE);
             }
         }

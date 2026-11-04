@@ -24,4 +24,6 @@
     <item name="action_afr" type="id"/>
     <item name="channel_new_content" type="id"/>
     <item name="linkify_click_handler" type="id"/>
+    <item name="action_more_options" type="id"/>
+    <item name="seek_chapter_title" type="id"/>
 </resources>
