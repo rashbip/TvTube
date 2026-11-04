@@ -118,6 +118,10 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
         int vPad = (int) (7 * density);
         holder.view.setPadding(hPad, vPad, hPad, vPad);
 
+        if (iconView != null) {
+            iconView.setSelected(highlighted);
+        }
+
         if (!isExpanded) {
             // Collapsed mode: no background, active icon white (1.0f), other icons grey-like (0.45f)
             holder.view.setBackground(null);
