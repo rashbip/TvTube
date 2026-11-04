@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -189,6 +190,34 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
     private void updatePlayerBackground() {
         if (isOverlayShown()) {
             setBackgroundResource(isSuggestionsShown() ? R.drawable.player_background_suggestions : R.drawable.player_background_controls);
+        }
+        updateTopTitleVisibility();
+    }
+
+    private void updateTopTitleVisibility() {
+        View root = getView();
+        if (root == null) {
+            return;
+        }
+        View topTitleWrapper = root.findViewById(R.id.player_top_title_wrapper);
+        if (topTitleWrapper != null) {
+            boolean show = isOverlayShown() && !isSuggestionsShown() && !isInPIPMode();
+            topTitleWrapper.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void updateTopTitleText(CharSequence title, CharSequence subtitle) {
+        View root = getView();
+        if (root == null) {
+            return;
+        }
+        TextView titleView = root.findViewById(R.id.player_top_title);
+        if (titleView != null && title != null) {
+            titleView.setText(title);
+        }
+        TextView subtitleView = root.findViewById(R.id.player_top_subtitle);
+        if (subtitleView != null && subtitle != null) {
+            subtitleView.setText(subtitle);
         }
     }
 
@@ -840,9 +869,12 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
 
         if (mPlayerGlue != null && video != null) {
             // Preserve player formatting
-            mPlayerGlue.setTitle(video.getTitleFull() != null ? video.getTitleFull() : "...");
-            mPlayerGlue.setSubtitle(video.getSecondTitleFull() != null ? createSubtitle(video) : "...");
+            CharSequence title = video.getTitleFull() != null ? video.getTitleFull() : "...";
+            CharSequence subtitle = video.getSecondTitleFull() != null ? createSubtitle(video) : "...";
+            mPlayerGlue.setTitle(title);
+            mPlayerGlue.setSubtitle(subtitle);
             mPlayerGlue.setVideo(video);
+            updateTopTitleText(title, subtitle);
         }
     }
 
@@ -860,19 +892,7 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
         CharSequence result = video.getSecondTitleFull();
 
         if (getContext() != null && video.isLive) {
-            result = TextUtils.concat( result, " ", Video.TERTIARY_TEXT_DELIM, " ", Utils.color(getContext().getString(R.string.badge_live), ContextCompat.getColor(getContext(), R.color.red)));
-        }
-
-        if (getContext() != null && video.likeCount != null) {
-            result = TextUtils.concat(result, " ", Video.TERTIARY_TEXT_DELIM, " ", video.likeCount, Helpers.NON_BREAKING_SPACE, Helpers.THUMB_UP); // color of thumb cannot be changed
-        }
-
-        if (getContext() != null && video.dislikeCount != null) {
-            result = TextUtils.concat(result, " ", Video.TERTIARY_TEXT_DELIM, " ", video.dislikeCount, Helpers.NON_BREAKING_SPACE, Helpers.THUMB_DOWN); // color of thumb cannot be changed
-        }
-
-        if (getContext() != null && video.subscriberCount != null) {
-            result = TextUtils.concat(result, " ", Video.TERTIARY_TEXT_DELIM, " ", video.subscriberCount.replace(" ", Helpers.NON_BREAKING_SPACE));
+            result = TextUtils.concat(result, " ", Video.TERTIARY_TEXT_DELIM, " ", Utils.color(getContext().getString(R.string.badge_live), ContextCompat.getColor(getContext(), R.color.red)));
         }
 
         return result;
@@ -898,6 +918,7 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
     @Override
     public void setTitle(String title) {
         mPlayerGlue.setTitle(title);
+        updateTopTitleText(title, null);
     }
 
     @Override
@@ -1220,6 +1241,7 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
     @Override
     public void showControlsOverlay(boolean runAnimation) {
         super.showControlsOverlay(mIsUIAnimationsEnabled);
+        updateTopTitleVisibility();
 
         // Do throttle. Called so many times. Rely on boxing because initial state is unknown.
         if (mIsControlsShownPreviously != null && mIsControlsShownPreviously) {
@@ -1242,6 +1264,7 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
     @Override
     public void hideControlsOverlay(boolean runAnimation) {
         super.hideControlsOverlay(mIsUIAnimationsEnabled);
+        updateTopTitleVisibility();
 
         // Do throttle. Called so many times. Rely on boxing because initial state is unknown.
         if (mIsControlsShownPreviously != null && !mIsControlsShownPreviously) {

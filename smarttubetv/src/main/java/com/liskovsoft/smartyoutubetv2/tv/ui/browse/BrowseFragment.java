@@ -188,7 +188,7 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
-        int brandColorRes = Helpers.getThemeAttr(getContext(), R.attr.brandColor);
+        int brandColorRes = Helpers.getThemeAttr(getContext(), R.attr.shelfBackground);
         int brandAccentColorRes = Helpers.getThemeAttr(getContext(), R.attr.brandAccentColor);
 
         updateBadge();

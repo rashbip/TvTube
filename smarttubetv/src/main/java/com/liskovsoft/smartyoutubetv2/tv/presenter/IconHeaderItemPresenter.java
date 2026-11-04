@@ -1,6 +1,8 @@
 package com.liskovsoft.smartyoutubetv2.tv.presenter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -26,7 +28,6 @@ import com.liskovsoft.smartyoutubetv2.tv.util.ViewUtil;
 
 public class IconHeaderItemPresenter extends RowHeaderPresenter {
     private static final String TAG = IconHeaderItemPresenter.class.getSimpleName();
-    private float mUnselectedAlpha;
     private final int mResId;
     private final String mIconUrl;
     private Drawable mDefaultIcon;
@@ -38,14 +39,11 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup) {
-        mUnselectedAlpha = viewGroup.getResources()
-                .getFraction(R.fraction.lb_browse_header_unselect_alpha, 1, 1);
         LayoutInflater inflater = (LayoutInflater) viewGroup.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mDefaultIcon = new ColorDrawable(ContextCompat.getColor(viewGroup.getContext(), R.color.lb_grey));
 
         View view = inflater.inflate(R.layout.icon_header_item, null);
-        view.setAlpha(mUnselectedAlpha); // Initialize icons to be at half-opacity.
 
         return new ViewHolder(view);
     }
@@ -71,10 +69,11 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
                         .apply(ViewUtil.glideOptions().error(mDefaultIcon))
                         .listener(mErrorListener)
                         .into(iconView);
-
-                //ViewUtil.makeMonochrome(iconView);
             } else {
                 Drawable icon = mResId > 0 ? ContextCompat.getDrawable(rootView.getContext(), mResId) : mDefaultIcon;
+                if (icon != null) {
+                    icon = icon.mutate();
+                }
                 iconView.setImageDrawable(icon);
             }
         }
@@ -83,6 +82,10 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
         if (label != null) {
             label.setText(headerItem.getName());
         }
+
+        if (viewHolder instanceof RowHeaderPresenter.ViewHolder) {
+            updateHighlightState((RowHeaderPresenter.ViewHolder) viewHolder);
+        }
     }
 
     @Override
@@ -90,12 +93,53 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
         // NOP
     }
 
-    // TODO: This is a temporary fix. Remove me when leanback onCreateViewHolder no longer sets the
-    // mUnselectAlpha, and also assumes the xml inflation will return a RowHeaderView.
     @Override
     protected void onSelectLevelChanged(RowHeaderPresenter.ViewHolder holder) {
-        holder.view.setAlpha(mUnselectedAlpha + holder.getSelectLevel() *
-                (1.0f - mUnselectedAlpha));
+        updateHighlightState(holder);
+    }
+
+    private void updateHighlightState(RowHeaderPresenter.ViewHolder holder) {
+        if (holder == null || holder.view == null) {
+            return;
+        }
+        boolean highlighted = holder.getSelectLevel() >= 0.5f;
+        ImageView iconView = holder.view.findViewById(R.id.header_icon);
+        TextView label = holder.view.findViewById(R.id.header_label);
+        boolean isExpanded = label != null && label.getVisibility() == View.VISIBLE;
+
+        float density = holder.view.getResources().getDisplayMetrics().density;
+        ViewGroup.LayoutParams lp = holder.view.getLayoutParams();
+        int targetWidth = isExpanded ? (int) (148 * density) : ViewGroup.LayoutParams.WRAP_CONTENT;
+        if (lp != null && lp.width != targetWidth) {
+            lp.width = targetWidth;
+            holder.view.setLayoutParams(lp);
+        }
+        int hPad = (int) ((isExpanded ? 10 : 4) * density);
+        int vPad = (int) (7 * density);
+        holder.view.setPadding(hPad, vPad, hPad, vPad);
+
+        if (!isExpanded) {
+            // Collapsed mode: no background, active icon white (1.0f), other icons grey-like (0.45f)
+            holder.view.setBackground(null);
+            holder.view.setAlpha(highlighted ? 1.0f : 0.45f);
+            if (iconView != null) {
+                iconView.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+            }
+        } else {
+            // Expanded mode: unselected white icon & text; highlighted full-width rounded rect white bg with black icon & text
+            holder.view.setAlpha(1.0f);
+            if (highlighted) {
+                holder.view.setBackgroundResource(R.drawable.sidebar_item_highlight_bg);
+            } else {
+                holder.view.setBackground(null);
+            }
+            if (iconView != null) {
+                iconView.setColorFilter(highlighted ? Color.BLACK : Color.WHITE, PorterDuff.Mode.SRC_IN);
+            }
+            if (label != null) {
+                label.setTextColor(highlighted ? Color.BLACK : Color.WHITE);
+            }
+        }
     }
 
     private final RequestListener<Drawable> mErrorListener = new RequestListener<Drawable>() {

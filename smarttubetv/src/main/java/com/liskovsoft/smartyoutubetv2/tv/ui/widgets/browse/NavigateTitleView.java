@@ -151,6 +151,14 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
         if (mIsSearchOrbEnabled) {
             mSearchOrbView.setVisibility(View.GONE);
         }
+        View micBtn = findViewById(R.id.appbar_mic_btn);
+        if (micBtn != null) {
+            micBtn.setVisibility(mSearchVisibility);
+        }
+        View searchBar = findViewById(R.id.appbar_search_bar);
+        if (searchBar != null) {
+            searchBar.setVisibility(mSearchVisibility);
+        }
 
         if (mIsAccountViewEnabled) {
             mAccountView.setVisibility(mSearchVisibility);
@@ -181,6 +189,10 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
 
         MediaServiceManager.instance().addAccountListener(this);
 
+        int bgRes = com.liskovsoft.sharedutils.helpers.Helpers.getThemeAttr(getContext(), R.attr.shelfBackground);
+        if (bgRes != 0) {
+            setBackgroundColor(ContextCompat.getColor(getContext(), bgRes));
+        }
         setupButtons();
 
         MainUIData mainUIData = MainUIData.instance(getContext());
@@ -193,6 +205,16 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
         MainUIData mainUIData = MainUIData.instance(getContext());
 
         mSearchOrbView = findViewById(R.id.title_orb);
+
+        View micBtn = findViewById(R.id.appbar_mic_btn);
+        if (micBtn != null) {
+            micBtn.setOnClickListener(v -> com.liskovsoft.smartyoutubetv2.common.app.presenters.SearchPresenter.instance(getContext()).startVoice());
+        }
+
+        View searchBar = findViewById(R.id.appbar_search_bar);
+        if (searchBar != null) {
+            searchBar.setOnClickListener(v -> com.liskovsoft.smartyoutubetv2.common.app.presenters.SearchPresenter.instance(getContext()).startSearch(null));
+        }
 
         mAccountView = findViewById(R.id.account_orb);
         mAccountView.setOnOrbClickedListener(v -> AccountSelectionPresenter.instance(getContext()).nextAccountOrDialog());

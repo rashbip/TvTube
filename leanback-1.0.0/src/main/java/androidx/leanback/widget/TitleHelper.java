@@ -88,11 +88,7 @@ public class TitleHelper {
      * Shows the title.
      */
     public void showTitle(boolean show) {
-        if (show) {
-            TransitionHelper.runTransition(mSceneWithTitle, mTitleDownTransition);
-        } else {
-            TransitionHelper.runTransition(mSceneWithoutTitle, mTitleUpTransition);
-        }
+        mTitleView.setVisibility(View.VISIBLE);
     }
 
     /**

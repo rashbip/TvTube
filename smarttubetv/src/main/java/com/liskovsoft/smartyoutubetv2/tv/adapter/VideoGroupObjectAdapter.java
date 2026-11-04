@@ -57,12 +57,12 @@ public class VideoGroupObjectAdapter extends ObjectAdapter {
     public void showPlaceholders() {
         if (!mVideoItems.isEmpty()) return;
         mHasPlaceholders = true;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 8; i++) {
             Video dummy = new Video();
             dummy.id = -100 - i;
             mVideoItems.add(dummy);
         }
-        notifyItemRangeInserted(0, 4);
+        notifyItemRangeInserted(0, 8);
     }
 
     public void clearPlaceholders() {
@@ -192,6 +192,7 @@ public class VideoGroupObjectAdapter extends ObjectAdapter {
      * IndexOutOfBoundsException: Invalid item position... GridLayoutManager.getViewForPosition
      */
     public void clear() {
+        mHasPlaceholders = false;
         int itemCount = mVideoItems.size();
         mVideoItems.clear();
         mVideoGroups.clear();

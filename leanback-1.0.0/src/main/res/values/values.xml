@@ -653,7 +653,7 @@
     <dimen name="lb_browse_item_vertical_spacing">8dp</dimen>
     <dimen name="lb_browse_padding_bottom">48dp</dimen>
     <dimen name="lb_browse_padding_end">56dp</dimen>
-    <dimen name="lb_browse_padding_start">56dp</dimen>
+    <dimen name="lb_browse_padding_start">18dp</dimen>
     <dimen name="lb_browse_padding_top">27dp</dimen>
     <dimen name="lb_browse_row_hovercard_description_font_size">14sp</dimen>
     <dimen name="lb_browse_row_hovercard_max_width">400dp</dimen>

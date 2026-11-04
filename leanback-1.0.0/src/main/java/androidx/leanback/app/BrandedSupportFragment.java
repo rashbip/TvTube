@@ -168,13 +168,9 @@ public class BrandedSupportFragment extends Fragment {
      * @param show True to show title view, false to hide title view.
      */
     public void showTitle(boolean show) {
-        // TODO: handle interruptions?
-        if (show == mShowingTitle) {
-            return;
-        }
-        mShowingTitle = show;
+        mShowingTitle = true;
         if (mTitleHelper != null) {
-            mTitleHelper.showTitle(show);
+            mTitleHelper.showTitle(true);
         }
     }
 

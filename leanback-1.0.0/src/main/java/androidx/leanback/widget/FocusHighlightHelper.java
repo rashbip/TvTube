@@ -277,12 +277,7 @@ public class FocusHighlightHelper {
             if (!mInitialized) {
                 Resources res = view.getResources();
                 TypedValue value = new TypedValue();
-                if (mScaleEnabled) {
-                    res.getValue(R.dimen.lb_browse_header_select_scale, value, true);
-                    mSelectScale = value.getFloat();
-                } else {
-                    mSelectScale = 1f;
-                }
+                mSelectScale = 1f;
                 res.getValue(R.dimen.lb_browse_header_select_duration, value, true);
                 mDuration = value.data;
                 mInitialized = true;
@@ -312,8 +307,13 @@ public class FocusHighlightHelper {
             void setFocusLevel(float level) {
                 Presenter presenter = mViewHolder.getPresenter();
                 if (presenter instanceof RowHeaderPresenter) {
+                    float selectLevel = level;
+                    ViewParent p = mViewHolder.itemView.getParent();
+                    if (p instanceof VerticalGridView && ((VerticalGridView) p).getSelectedPosition() == mViewHolder.getAdapterPosition()) {
+                        selectLevel = 1.0f;
+                    }
                     ((RowHeaderPresenter) presenter).setSelectLevel(
-                            ((RowHeaderPresenter.ViewHolder) mViewHolder.getViewHolder()), level);
+                            ((RowHeaderPresenter.ViewHolder) mViewHolder.getViewHolder()), selectLevel);
                 }
                 super.setFocusLevel(level);
             }

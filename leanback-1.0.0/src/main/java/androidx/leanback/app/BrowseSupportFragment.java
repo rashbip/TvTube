@@ -1295,6 +1295,9 @@ public class BrowseSupportFragment extends BaseSupportFragment {
         mBrowseFrame.setOnFocusSearchListener(mOnFocusSearchListener);
 
         installTitleView(inflater, mBrowseFrame, savedInstanceState);
+        if (getTitleView() != null) {
+            androidx.core.view.ViewCompat.setTranslationZ(getTitleView(), 100f);
+        }
 
         mScaleFrameLayout = (ScaleFrameLayout) root.findViewById(R.id.scale_frame);
         mScaleFrameLayout.setPivotX(0);
@@ -1372,51 +1375,10 @@ public class BrowseSupportFragment extends BaseSupportFragment {
     }
 
     void updateTitleViewVisibility() {
-        if (!mShowingHeaders) {
-            boolean showTitleView;
-            if (mIsPageRow && mMainFragmentAdapter != null) {
-                // page fragment case:
-                showTitleView = mMainFragmentAdapter.mFragmentHost.mShowTitleView;
-            } else {
-                // regular row view case:
-                showTitleView = isFirstRowWithContent(mSelectedPosition);
-            }
-            if (showTitleView) {
-                showTitle(TitleViewAdapter.FULL_VIEW_VISIBLE);
-            } else {
-                showTitle(false);
-            }
-        } else {
-            // when HeaderFragment is showing,  showBranding and showSearch are slightly different
-            boolean showBranding;
-            boolean showSearch;
-            if (mIsPageRow && mMainFragmentAdapter != null) {
-                showBranding = mMainFragmentAdapter.mFragmentHost.mShowTitleView;
-            } else {
-                showBranding = isFirstRowWithContent(mSelectedPosition);
-            }
-            showSearch = isFirstRowWithContentOrPageRow(mSelectedPosition);
-            int flags = 0;
-            if (showBranding) flags |= TitleViewAdapter.BRANDING_VIEW_VISIBLE;
-            if (showSearch) flags |= TitleViewAdapter.SEARCH_VIEW_VISIBLE;
-            if (flags != 0) {
-                showTitle(flags);
-            } else {
-                showTitle(false);
-            }
-        }
+        showTitle(TitleViewAdapter.FULL_VIEW_VISIBLE);
     }
 
     boolean isFirstRowWithContentOrPageRow(int rowPosition) {
-        if (mAdapter == null || mAdapter.size() == 0) {
-            return true;
-        }
-        for (int i = 0; i < mAdapter.size(); i++) {
-            final Row row = (Row) mAdapter.get(i);
-            if (row.isRenderedAsRowView() || row instanceof PageRow) {
-                return rowPosition == i;
-            }
-        }
         return true;
     }
 
@@ -1446,12 +1408,16 @@ public class BrowseSupportFragment extends BaseSupportFragment {
         }
     }
 
+    private int getCollapsedHeadersWidth() {
+        return (int) (60 * getResources().getDisplayMetrics().density);
+    }
+
     private void setHeadersOnScreen(boolean onScreen) {
-        MarginLayoutParams lp;
-        View containerList;
-        containerList = mHeadersSupportFragment.getView();
-        lp = (MarginLayoutParams) containerList.getLayoutParams();
-        lp.setMarginStart(onScreen ? 0 : -mContainerListMarginStart);
+        View containerList = mHeadersSupportFragment.getView();
+        if (containerList == null) return;
+        MarginLayoutParams lp = (MarginLayoutParams) containerList.getLayoutParams();
+        lp.setMarginStart(0);
+        lp.width = onScreen ? mContainerListMarginStart : getCollapsedHeadersWidth();
         containerList.setLayoutParams(lp);
     }
 
@@ -1464,7 +1430,7 @@ public class BrowseSupportFragment extends BaseSupportFragment {
 
     private void expandMainFragment(boolean expand) {
         MarginLayoutParams params = (MarginLayoutParams) mScaleFrameLayout.getLayoutParams();
-        params.setMarginStart(!expand ? mContainerListMarginStart : 0);
+        params.setMarginStart(!expand ? mContainerListMarginStart : getCollapsedHeadersWidth());
         mScaleFrameLayout.setLayoutParams(params);
         mMainFragmentAdapter.setExpand(expand);
 
@@ -1663,7 +1629,8 @@ public class BrowseSupportFragment extends BaseSupportFragment {
     @Override
     public void onStart() {
         super.onStart();
-        mHeadersSupportFragment.setAlignment(mContainerListAlignTop);
+        int headerTopMarginPx = (int) (56 * getResources().getDisplayMetrics().density);
+        mHeadersSupportFragment.setAlignment(Math.max(0, mContainerListAlignTop - headerTopMarginPx));
         setMainFragmentAlignment();
 
         if (mCanShowHeaders && mShowingHeaders && mHeadersSupportFragment != null
@@ -1831,7 +1798,7 @@ public class BrowseSupportFragment extends BaseSupportFragment {
         View searchOrbView = getTitleViewAdapter().getSearchAffordanceView();
         if (searchOrbView != null) {
             MarginLayoutParams lp = (MarginLayoutParams) searchOrbView.getLayoutParams();
-            lp.setMarginStart(onScreen ? 0 : -mContainerListMarginStart);
+            lp.setMarginStart(0);
             searchOrbView.setLayoutParams(lp);
         }
     }

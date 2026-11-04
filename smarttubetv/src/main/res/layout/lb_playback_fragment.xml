@@ -113,6 +113,46 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <LinearLayout
+        android:id="@+id/player_top_title_wrapper"
+        android:layout_width="450dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="28dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/player_top_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:shadowColor="#B0000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="4" />
+
+        <TextView
+            android:id="@+id/player_top_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="#E0E0E0"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:shadowColor="#B0000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="3" />
+    </LinearLayout>
+
     <androidx.leanback.widget.NonOverlappingFrameLayout
             android:id="@+id/playback_controls_dock"
             android:transitionGroup="true"

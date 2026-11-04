@@ -39,6 +39,11 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
                     OnLayoutChangeListener layoutChangeListener = (OnLayoutChangeListener) Helpers.getField(ExtendedHeadersSupportFragment.this, "sLayoutChangeListener");
 
                     View headerView = viewHolder.getViewHolder().view;
+                    View label = headerView.findViewById(com.liskovsoft.smartyoutubetv2.tv.R.id.header_label);
+                    if (label != null) {
+                        Boolean enabled = (Boolean) Helpers.getField(ExtendedHeadersSupportFragment.this, "mHeadersEnabled");
+                        label.setVisibility(enabled == null || enabled ? View.VISIBLE : View.GONE);
+                    }
                     headerView.setOnClickListener(v -> {
                         OnHeaderClickedListener onHeaderClickedListener =
                                 (OnHeaderClickedListener) Helpers.getField(ExtendedHeadersSupportFragment.this, "mOnHeaderClickedListener");
@@ -81,6 +86,11 @@ public class ExtendedHeadersSupportFragment extends HeadersSupportFragment {
                     } else {
                         headerView.addOnLayoutChangeListener(layoutChangeListener);
                     }
+                }
+
+                @Override
+                public void onAttachedToWindow(final ItemBridgeAdapter.ViewHolder viewHolder) {
+                    updateListViewVisibility();
                 }
 
             };

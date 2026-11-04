@@ -150,10 +150,19 @@ public class VideoCardPresenter extends LongClickPresenter {
             return;
         }
 
+        if (video.id < 0 && video.cardImageUrl == null) {
+            cardView.getMainImageView().setImageResource(R.drawable.skeleton_card_shimmer);
+            if (cardView.getMainImageView().getDrawable() instanceof android.graphics.drawable.Animatable) {
+                ((android.graphics.drawable.Animatable) cardView.getMainImageView().getDrawable()).start();
+            }
+            return;
+        }
+
         Glide.with(context)
                 //.asBitmap() // disable animation (webp, gif)
                 .load(ClickbaitRemover.updateThumbnail(video, mThumbQuality))
                 .placeholder(R.drawable.skeleton_card_placeholder)
+                .fallback(R.drawable.skeleton_card_placeholder)
                 .apply(ViewUtil.glideOptions())
                 // improve image compression on low end devices
                 .override(mWidth, mHeight)

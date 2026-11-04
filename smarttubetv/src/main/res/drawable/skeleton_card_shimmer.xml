@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:oneshot="false">
-    <item android:duration="500">
+    <item android:duration="400">
         <shape android:shape="rectangle">
-            <solid android:color="#212121"/>
+            <solid android:color="#262626"/>
             <corners android:radius="@dimen/lb_rounded_rect_corner_radius"/>
         </shape>
     </item>
-    <item android:duration="500">
+    <item android:duration="400">
         <shape android:shape="rectangle">
-            <solid android:color="#2C2C2C"/>
+            <solid android:color="#3A3A3A"/>
             <corners android:radius="@dimen/lb_rounded_rect_corner_radius"/>
         </shape>
     </item>
-    <item android:duration="500">
+    <item android:duration="400">
         <shape android:shape="rectangle">
-            <solid android:color="#363636"/>
+            <solid android:color="#484848"/>
             <corners android:radius="@dimen/lb_rounded_rect_corner_radius"/>
         </shape>
     </item>
-    <item android:duration="500">
+    <item android:duration="400">
         <shape android:shape="rectangle">
-            <solid android:color="#2C2C2C"/>
+            <solid android:color="#3A3A3A"/>
             <corners android:radius="@dimen/lb_rounded_rect_corner_radius"/>
         </shape>
     </item>
 </animation-list>
-

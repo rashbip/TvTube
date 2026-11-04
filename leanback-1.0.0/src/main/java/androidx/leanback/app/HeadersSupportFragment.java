@@ -110,9 +110,27 @@ public class HeadersSupportFragment extends BaseRowSupportFragment {
         return (VerticalGridView) view.findViewById(R.id.browse_headers);
     }
 
+    private void updateSelectedHeaderHighlight() {
+        final VerticalGridView listView = getVerticalGridView();
+        if (listView == null) return;
+        int selectedPos = getSelectedPosition();
+        for (int i = 0; i < listView.getChildCount(); i++) {
+            View child = listView.getChildAt(i);
+            RecyclerView.ViewHolder vh = listView.getChildViewHolder(child);
+            if (vh instanceof ItemBridgeAdapter.ViewHolder) {
+                ItemBridgeAdapter.ViewHolder ibvh = (ItemBridgeAdapter.ViewHolder) vh;
+                if (ibvh.getPresenter() instanceof RowHeaderPresenter) {
+                    boolean isCurrent = (vh.getAdapterPosition() == selectedPos);
+                    ((RowHeaderPresenter) ibvh.getPresenter()).setSelectLevel((RowHeaderPresenter.ViewHolder) ibvh.getViewHolder(), isCurrent ? 1.0f : 0.0f);
+                }
+            }
+        }
+    }
+
     @Override
     void onRowSelected(RecyclerView parent, RecyclerView.ViewHolder viewHolder,
             int position, int subposition) {
+        updateSelectedHeaderHighlight();
         if (mOnHeaderViewSelectedListener != null) {
             if (viewHolder != null && position >= 0) {
                 ItemBridgeAdapter.ViewHolder vh = (ItemBridgeAdapter.ViewHolder) viewHolder;
@@ -144,6 +162,11 @@ public class HeadersSupportFragment extends BaseRowSupportFragment {
             } else {
                 headerView.addOnLayoutChangeListener(sLayoutChangeListener);
             }
+        }
+
+        @Override
+        public void onAttachedToWindow(final ItemBridgeAdapter.ViewHolder viewHolder) {
+            updateListViewVisibility();
         }
 
     };
@@ -181,15 +204,19 @@ public class HeadersSupportFragment extends BaseRowSupportFragment {
         updateListViewVisibility();
     }
 
-    private void updateListViewVisibility() {
+    protected void updateListViewVisibility() {
         final VerticalGridView listView = getVerticalGridView();
         if (listView != null) {
             getView().setVisibility(mHeadersGone ? View.GONE : View.VISIBLE);
             if (!mHeadersGone) {
-                if (mHeadersEnabled) {
-                    listView.setChildrenVisibility(View.VISIBLE);
-                } else {
-                    listView.setChildrenVisibility(View.INVISIBLE);
+                listView.setChildrenVisibility(View.VISIBLE);
+                int labelId = listView.getResources().getIdentifier("header_label", "id", listView.getContext().getPackageName());
+                if (labelId != 0) {
+                    for (int i = 0; i < listView.getChildCount(); i++) {
+                        View label = listView.getChildAt(i).findViewById(labelId);
+                        if (label != null) label.setVisibility(mHeadersEnabled ? View.VISIBLE : View.GONE);
+                    }
+                    updateSelectedHeaderHighlight();
                 }
             }
         }
@@ -258,6 +285,24 @@ public class HeadersSupportFragment extends BaseRowSupportFragment {
             background.mutate();
             ((GradientDrawable) background).setColors(
                     new int[] {Color.TRANSPARENT, backgroundColor});
+        }
+    }
+
+    @Override
+    public void setAlignment(int windowAlignOffsetTop) {
+        final VerticalGridView listView = getVerticalGridView();
+        if (listView != null) {
+            listView.setItemAlignmentOffset(0);
+            listView.setItemAlignmentOffsetPercent(
+                    VerticalGridView.ITEM_ALIGN_OFFSET_PERCENT_DISABLED);
+            listView.setWindowAlignmentOffset(0);
+            listView.setWindowAlignmentOffsetPercent(50f);
+            listView.setWindowAlignment(VerticalGridView.WINDOW_ALIGN_BOTH_EDGE);
+            float density = listView.getResources().getDisplayMetrics().density;
+            int leftPad = (int) (14 * density);
+            int topPad = (int) (12 * density);
+            int bottomPad = (int) (12 * density);
+            listView.setPadding(leftPad, topPad, 0, bottomPad);
         }
     }
 

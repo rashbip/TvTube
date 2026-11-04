@@ -32,7 +32,8 @@
         <androidx.leanback.widget.BrowseRowsFrameLayout
             android:id="@+id/browse_container_dock"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginTop="66dp">
 
             <androidx.leanback.widget.ScaleFrameLayout
                 android:id="@+id/scale_frame"

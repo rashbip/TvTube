@@ -99,6 +99,7 @@ public abstract class MultipleRowsFragment extends RowsSupportFragment implement
 
             mRowsAdapter = new ArrayObjectAdapter(presenterSelector);
             setAdapter(mRowsAdapter);
+            addSkeletonRows();
         }
     }
 
@@ -109,8 +110,30 @@ public abstract class MultipleRowsFragment extends RowsSupportFragment implement
         mShortsPresenter.setOnItemViewLongPressedListener(new ItemViewLongPressedListener());
     }
 
+    private boolean mHasSkeletonRows = false;
+
+    private void addSkeletonRows() {
+        if (mRowsAdapter != null && mRowsAdapter.size() == 0) {
+            mHasSkeletonRows = true;
+            for (int i = 0; i < 2; i++) {
+                mRowsAdapter.add(new ListRow(new HeaderItem(""), new VideoGroupObjectAdapter(mCardPresenter)));
+            }
+        }
+    }
+
+    private void clearSkeletonRows() {
+        if (mHasSkeletonRows && mRowsAdapter != null) {
+            mHasSkeletonRows = false;
+            mRowsAdapter.clear();
+            if (mChannelHeaderCallback != null) {
+                mRowsAdapter.add(mChannelHeaderCallback);
+            }
+        }
+    }
+
     @Override
     public void clear() {
+        mHasSkeletonRows = false;
         if (mRowsAdapter != null) {
             mRowsAdapter.clear();
             if (mChannelHeaderCallback != null) {
@@ -246,6 +269,8 @@ public abstract class MultipleRowsFragment extends RowsSupportFragment implement
         if (group.isEmpty()) {
             return;
         }
+
+        clearSkeletonRows();
 
         VideoGroupObjectAdapter existingAdapter = GridFragmentHelper.findRelatedAdapter(mVideoGroupAdapters, group, this::freeze);
 

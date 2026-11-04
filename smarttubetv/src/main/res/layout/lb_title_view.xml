@@ -1,63 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- MOD: add custom widgets to the title -->
-
-<!--
-     Copyright (C) 2014 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include layout="@layout/lb_title_view_logo"/>
 
-    <!-- MOD: add additional buttons -->
-    <LinearLayout android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:orientation="horizontal"
-                  android:layout_gravity="center_vertical|start">
+    <!-- Left Appbar Bar: Profile -> Mic -> Pill Search Bar -->
+    <LinearLayout
+        android:id="@+id/appbar_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical|start">
+
+        <!-- Hidden anchor for leanback TitleView backward-compat -->
         <androidx.leanback.widget.SearchOrbView
             android:id="@+id/title_orb"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:transitionGroup="true"
-            android:layout_gravity="center_vertical|start"
-            android:nextFocusRight="@id/account_orb"
-            android:visibility="invisible" />
+            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:visibility="gone" />
 
+        <!-- 1. Profile / Account Avatar (Very Left) -->
         <com.liskovsoft.smartyoutubetv2.tv.ui.widgets.search.LongClickSearchOrbView
             android:id="@+id/account_orb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:transitionGroup="true"
-            android:layout_marginStart="@dimen/search_bar_right_items_margin"
-            android:nextFocusLeft="@id/title_orb"
-            android:nextFocusRight="@id/language_orb"
+            android:nextFocusRight="@+id/appbar_mic_btn"
             app:searchOrbIcon="@drawable/browse_title_account"
             app:searchOrbColor="@color/orb_color"
             app:searchOrbBrightColor="@color/orb_bright_color"
             app:searchOrbIconColor="@color/orb_icon_color"
             android:visibility="gone" />
 
+        <!-- 2. Voice Mic Button (After Profile) -->
+        <FrameLayout
+            android:id="@+id/appbar_mic_btn"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="12dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@drawable/appbar_mic_bg"
+            android:nextFocusLeft="@+id/account_orb"
+            android:nextFocusRight="@+id/appbar_search_bar">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/lb_ic_search_mic"
+                android:tint="#FFFFFF"
+                android:contentDescription="@null" />
+        </FrameLayout>
+
+        <!-- 3. Extended Pill Search Bar (Clicking opens search screen) -->
+        <LinearLayout
+            android:id="@+id/appbar_search_bar"
+            android:layout_width="220dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="12dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@drawable/appbar_search_bg"
+            android:nextFocusLeft="@+id/appbar_mic_btn"
+            android:nextFocusRight="@+id/language_orb">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_search"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                android:fontFamily="@font/google_sans" />
+        </LinearLayout>
+
         <androidx.leanback.widget.SearchOrbView
             android:id="@+id/language_orb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:transitionGroup="true"
-            android:layout_marginStart="@dimen/search_bar_right_items_margin"
-            android:nextFocusLeft="@id/account_orb"
-            android:nextFocusRight="@id/exit_pip"
+            android:layout_marginStart="14dp"
+            android:nextFocusLeft="@+id/appbar_search_bar"
+            android:nextFocusRight="@+id/exit_pip"
             app:searchOrbIcon="@drawable/search_bar_language_orb"
             app:searchOrbColor="@color/orb_color"
             app:searchOrbBrightColor="@color/orb_bright_color"
@@ -69,8 +99,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:transitionGroup="true"
-            android:layout_marginStart="@dimen/search_bar_right_items_margin"
-            android:nextFocusLeft="@id/language_orb"
+            android:layout_marginStart="14dp"
+            android:nextFocusLeft="@+id/language_orb"
             app:searchOrbIcon="@drawable/browse_title_pip"
             app:searchOrbColor="@color/orb_color"
             app:searchOrbBrightColor="@color/orb_bright_color"
@@ -81,7 +111,7 @@
             android:id="@+id/pip_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/search_bar_right_items_margin"
+            android:layout_marginStart="14dp"
             android:layout_gravity="center_vertical"
             android:maxWidth="@dimen/pip_title_max_width"
             android:textSize="@dimen/pip_title_size"
