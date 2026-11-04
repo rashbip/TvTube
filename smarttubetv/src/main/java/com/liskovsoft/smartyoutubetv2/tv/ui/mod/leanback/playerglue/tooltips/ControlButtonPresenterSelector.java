@@ -105,9 +105,10 @@ public class ControlButtonPresenterSelector extends PresenterSelector {
                     && (action instanceof PaddingAction) && ((PaddingAction) action).getPadding() > 0;
 
             if (actionId == com.liskovsoft.smartyoutubetv2.tv.R.id.action_channel) {
-                widthPx = dp(ctx, 42);
+                heightPx = dp(ctx, 46);
+                widthPx = dp(ctx, 46);
                 marginEndPx = dp(ctx, 7);
-                iconSizePx = isChannelAvatar ? dp(ctx, 36) : dp(ctx, 22);
+                iconSizePx = isChannelAvatar ? dp(ctx, 32) : dp(ctx, 22);
                 bgResId = com.liskovsoft.smartyoutubetv2.tv.R.drawable.yt_player_btn_circle_bg;
             } else if (actionId == com.liskovsoft.smartyoutubetv2.tv.R.id.action_info) {
                 widthPx = ViewGroup.LayoutParams.WRAP_CONTENT;

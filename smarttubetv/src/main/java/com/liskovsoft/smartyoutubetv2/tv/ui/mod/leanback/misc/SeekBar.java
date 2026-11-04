@@ -20,6 +20,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -67,6 +69,7 @@ public final class SeekBar extends View {
     private static class SeekBarRectangle {
         public final RectF rect = new RectF();
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        public boolean isChapterDivider;
     }
 
     private final RectF mProgressRect = new RectF();
@@ -86,6 +89,7 @@ public final class SeekBar extends View {
     private int mBarHeight;
     private int mActiveBarHeight;
     private final List<SeekBarRectangle> mSeekBarRectangles = new ArrayList<>();
+    private List<SeekBarSegment> mRawSegments;
 
     private AccessibilitySeekListener mAccessibilitySeekListener;
 
@@ -140,12 +144,14 @@ public final class SeekBar extends View {
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         calculate();
+        calculateSegments(mRawSegments);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         final int radius = isFocused() ? mActiveRadius : mBarHeight / 2;
+        int layerId = canvas.saveLayer(0, 0, getWidth(), getHeight(), null);
         canvas.drawRoundRect(mBackgroundRect, radius, radius, mBackgroundPaint);
         if (mSecondProgressRect.right > mSecondProgressRect.left) {
             canvas.drawRoundRect(mSecondProgressRect, radius, radius, mSecondProgressPaint);
@@ -153,8 +159,13 @@ public final class SeekBar extends View {
         canvas.drawRoundRect(mProgressRect, radius, radius, mProgressPaint);
 
         for (SeekBarRectangle rectangle : mSeekBarRectangles) {
-            canvas.drawRoundRect(rectangle.rect, radius, radius, rectangle.paint);
+            if (rectangle.isChapterDivider) {
+                canvas.drawRect(rectangle.rect.left, 0, rectangle.rect.right, getHeight(), rectangle.paint);
+            } else {
+                canvas.drawRoundRect(rectangle.rect, radius, radius, rectangle.paint);
+            }
         }
+        canvas.restoreToCount(layerId);
 
         canvas.drawCircle(mKnobx, getHeight() / 2, radius, mKnobPaint);
     }
@@ -287,24 +298,21 @@ public final class SeekBar extends View {
     }
 
     public void setSegments(List<SeekBarSegment> segments) {
+        mRawSegments = segments;
         calculateSegments(segments);
     }
 
     private void calculateSegments(List<SeekBarSegment> segments) {
+        mSeekBarRectangles.clear();
         if (segments == null) {
-            mSeekBarRectangles.clear();
-            //invalidate();
+            invalidate();
             return;
         }
 
         final int barHeight = isFocused() ? mActiveBarHeight : mBarHeight;
-
         final int width = getWidth();
         final int height = getHeight();
         final int verticalPadding = (height - barHeight) / 2;
-
-        //final int radius = isFocused() ? mActiveRadius : mBarHeight / 2;
-        //final int progressWidth = width - radius * 2;
 
         for (SeekBarSegment segment : segments) {
             if (segment.endProgress < 0 || segment.startProgress < 0 || segment.startProgress >= 1) {
@@ -315,22 +323,27 @@ public final class SeekBar extends View {
                 segment.endProgress = 1;
             }
 
-            float rightPixels = segment.endProgress * width;
             float leftPixels = segment.startProgress * width;
-
-            // Bookmark segment (1px width) fix
-            float bookmarkWidth = mBarHeight / 2f;
-            if (rightPixels - leftPixels < bookmarkWidth) {
-                rightPixels += bookmarkWidth;
-            }
+            float rightPixels = segment.endProgress * width;
 
             SeekBarRectangle rect = new SeekBarRectangle();
-            rect.rect.set(leftPixels, verticalPadding, rightPixels, height - verticalPadding);
-            rect.paint.setColor(segment.color);
+            if (segment.color == Color.BLACK) {
+                rect.isChapterDivider = true;
+                float gapWidth = Math.max(3f, mBarHeight * 0.45f);
+                rect.rect.set(leftPixels - gapWidth / 2f, verticalPadding, leftPixels + gapWidth / 2f, height - verticalPadding);
+                rect.paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            } else {
+                float bookmarkWidth = mBarHeight / 2f;
+                if (rightPixels - leftPixels < bookmarkWidth) {
+                    rightPixels += bookmarkWidth;
+                }
+                rect.rect.set(leftPixels, verticalPadding, rightPixels, height - verticalPadding);
+                rect.paint.setColor(segment.color);
+            }
             mSeekBarRectangles.add(rect);
         }
 
-        //invalidate();
+        invalidate();
     }
 
     // Touch interceptor

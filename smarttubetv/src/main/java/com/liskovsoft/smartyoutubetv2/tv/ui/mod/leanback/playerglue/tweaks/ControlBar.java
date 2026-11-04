@@ -14,7 +14,11 @@
 package com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.playerglue.tweaks;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -41,16 +45,23 @@ class ControlBar extends LinearLayout {
     private boolean mIsSharedFocusEnabled = true;
     private boolean mDefaultFocusToMiddle = true;
     private boolean mFocusRecovery = true;
+    private final Paint mGroupPillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF mGroupPillRect = new RectF();
 
     public ControlBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setGravity(Gravity.CENTER_VERTICAL);
-        resetFocus(); // MOD: reset global focus index
+        initBar();
     }
 
     public ControlBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        initBar();
+    }
+
+    private void initBar() {
         setGravity(Gravity.CENTER_VERTICAL);
+        mGroupPillPaint.setColor(Color.parseColor("#26FFFFFF"));
+        mGroupPillPaint.setStyle(Paint.Style.FILL);
         resetFocus(); // MOD: reset global focus index
     }
 
@@ -88,6 +99,33 @@ class ControlBar extends LinearLayout {
             return 5;
         }
         return mDefaultFocusToMiddle ? getChildCount() / 2 : 0;
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        // Draw continuous single-piece pill backgrounds for the secondary control bar groups:
+        // Group 1: indices 0..3 ([ Like, Dislike, Comments, Save ])
+        // Group 2: indices 4..6 ([ CC, Settings, More ])
+        if (!isPrimaryControlsBar() && getChildCount() >= 7) {
+            drawGroupPill(canvas, 0, 3);
+            drawGroupPill(canvas, 4, 6);
+        }
+        super.dispatchDraw(canvas);
+    }
+
+    private void drawGroupPill(Canvas canvas, int startIndex, int endIndex) {
+        View startChild = getChildAt(startIndex);
+        View endChild = getChildAt(endIndex);
+        if (startChild == null || endChild == null) {
+            return;
+        }
+        float left = startChild.getLeft();
+        float top = startChild.getTop();
+        float right = endChild.getRight();
+        float bottom = startChild.getBottom();
+        float radius = (bottom - top) / 2f;
+        mGroupPillRect.set(left, top, right, bottom);
+        canvas.drawRoundRect(mGroupPillRect, radius, radius, mGroupPillPaint);
     }
 
     @Override
