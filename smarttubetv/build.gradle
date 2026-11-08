@@ -91,7 +91,7 @@ android {
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
-                storeFile = file(keystoreProperties['storeFile'])
+                storeFile = rootProject.file(keystoreProperties['storeFile'])
                 storePassword = keystoreProperties['storePassword']
                 keyAlias = keystoreProperties['keyAlias']
                 keyPassword = keystoreProperties['keyPassword']
@@ -109,12 +109,16 @@ android {
 
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
             }
         }
         // Use same key for release and debug for testing
         debug {
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
             }
         }
     }
